@@ -24,7 +24,9 @@ async def reset_db():
 @pytest_asyncio.fixture(scope="function")
 async def client():
     """Provide an asynchronous test client for making HTTP requests."""
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as async_client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as async_client:
         yield async_client
 
 
@@ -52,7 +54,9 @@ async def seed_database(db_session):
     :type db_session: AsyncSession
     """
     settings = get_settings()
-    seeder = CSVDatabaseSeeder(csv_file_path=settings.PATH_TO_MOVIES_CSV, db_session=db_session)
+    seeder = CSVDatabaseSeeder(
+        csv_file_path=settings.PATH_TO_MOVIES_CSV, db_session=db_session
+    )
 
     if not await seeder.is_db_populated():
         await seeder.seed()

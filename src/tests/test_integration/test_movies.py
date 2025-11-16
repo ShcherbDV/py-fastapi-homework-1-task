@@ -55,7 +55,9 @@ async def test_get_movies_with_custom_parameters(client, seed_database):
     page = 2
     per_page = 5
 
-    response = await client.get(f"/api/v1/theater/movies/?page={page}&per_page={per_page}")
+    response = await client.get(
+        f"/api/v1/theater/movies/?page={page}&per_page={per_page}"
+    )
     assert response.status_code == 200
 
     response_data = response.json()
@@ -71,11 +73,14 @@ async def test_get_movies_with_custom_parameters(client, seed_database):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("page, per_page, expected_detail", [
-    (0, 10, "Input should be greater than or equal to 1"),
-    (1, 0, "Input should be greater than or equal to 1"),
-    (0, 0, "Input should be greater than or equal to 1"),
-])
+@pytest.mark.parametrize(
+    "page, per_page, expected_detail",
+    [
+        (0, 10, "Input should be greater than or equal to 1"),
+        (1, 0, "Input should be greater than or equal to 1"),
+        (0, 0, "Input should be greater than or equal to 1"),
+    ],
+)
 async def test_invalid_page_and_per_page(client, page, per_page, expected_detail):
     """
     Test invalid pagination parameters.
@@ -84,7 +89,9 @@ async def test_invalid_page_and_per_page(client, page, per_page, expected_detail
         - 422 response status code.
         - JSON validation error with the expected message.
     """
-    response = await client.get(f"/api/v1/theater/movies/?page={page}&per_page={per_page}")
+    response = await client.get(
+        f"/api/v1/theater/movies/?page={page}&per_page={per_page}"
+    )
     assert response.status_code == 422
 
     response_data = response.json()
@@ -121,7 +128,9 @@ async def test_page_exceeds_maximum(client, db_session, seed_database):
     total_movies = await db_session.scalar(select(func.count()).select_from(MovieModel))
     max_page = (total_movies + per_page - 1) // per_page
 
-    response = await client.get(f"/api/v1/theater/movies/?page={max_page + 1}&per_page={per_page}")
+    response = await client.get(
+        f"/api/v1/theater/movies/?page={max_page + 1}&per_page={per_page}"
+    )
     assert response.status_code == 404
     assert response.json()["detail"] == "No movies found."
 
@@ -150,8 +159,16 @@ async def test_get_movie_by_id_valid(client, db_session, seed_database):
         - 200 response status code.
         - JSON response containing the correct movie details.
     """
-    min_id = (await db_session.execute(select(MovieModel.id).order_by(MovieModel.id.asc()))).scalars().first()
-    max_id = (await db_session.execute(select(MovieModel.id).order_by(MovieModel.id.desc()))).scalars().first()
+    min_id = (
+        (await db_session.execute(select(MovieModel.id).order_by(MovieModel.id.asc())))
+        .scalars()
+        .first()
+    )
+    max_id = (
+        (await db_session.execute(select(MovieModel.id).order_by(MovieModel.id.desc())))
+        .scalars()
+        .first()
+    )
     random_id = random.randint(min_id, max_id)
 
     expected_movie = await db_session.get(MovieModel, random_id)
