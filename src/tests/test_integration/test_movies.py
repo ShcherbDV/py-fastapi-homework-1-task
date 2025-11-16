@@ -2,7 +2,7 @@ import random
 import pytest
 from sqlalchemy import select, func
 
-from database import MovieModel
+from src.database.models import MovieModel
 
 
 @pytest.mark.asyncio
