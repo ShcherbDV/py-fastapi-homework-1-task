@@ -1,5 +1,3 @@
-import math
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,12 +30,11 @@ async def get_movies(
     stmt = select(MovieModel).offset((page - 1) * per_page).limit(per_page)
     result = await db.execute(stmt)
     movies = result.scalars().all()
+
     if len(movies) < 1:
         raise HTTPException(status_code=404, detail="No movies found.")
 
     total_items = await db.scalar(select(func.count()).select_from(MovieModel))
-    if total_items == 0:
-        raise HTTPException(status_code=404, detail="No movies found.")
 
     total_pages = (total_items + per_page - 1) // per_page
 
